@@ -115,3 +115,28 @@ Suppose we wish to delete an index $j$ from the top-k array $A$. Design an algor
 - Assume $ n > k$, i.e, there are already more than $k$ elements in the data structure.
 
 ### Problem 2: MaxHeap
+
+### Problem 3: Heap data structure to mantain/extract median (instead of minimum/maximum key)
+
+We have seen how min-heaps can efficiently extract the smallest element efficiently and maintain the least element as we insert/delete elements. Similarly, max-heaps can maintain the largest element. In this exercise, we combine both to maintain the "median" element.
+
+The median is the middle element of a list of numbers.
+- If the list has size $n$ where $n$ is odd, the median is the $(n-1)/2^{th}$ element where $0^{th}$ is least and $(n-1)^{th}$ is the maximum.
+- If $n$ is even, then we designate the median the average of the $(n/2-1)^{th}$ and $(n/2)^{th}$ elements.
+
+__Example__
+
+- List is $[-1, 5, 4, 2, 3]$ has size $5$, the median is the $2^{nd}$ element (remember again least element is designated as $0^{th}$) which is $3$.
+- List is $[-1, 3, 2, 1 ]$ has size $4$. The median element is the average of  $1^{st}$ element (1) and $2^{nd}$ element (2) which is  $1.5$.
+
+#### Maintaining median using two heaps.
+
+The data will be maintained as the union of the elements in two heaps $H_{\min}$ and $H_{\max}$, wherein $H_{\min}$ is a min-heap and $H_{\max}$ is a max-heap.  We will maintain the following invariant:
+  - The max element of  $H_{\max}$ will be less than or equal to the min element of  $H_{\min}$.
+  - The sizes of $H_{max}$ and $H_{min}$ are equal (if number of elements in the data structure is even) or $H_{max}$ may have one less element than $H_{min}$ (if the number of elements in the data structure is odd).
+
+#### (A)  Design algorithm for insertion.
+
+Suppose, we have the current data split between $H_{max}$ and $H_{min}$ and we wish to insert an element $e$ into the data structure, describe the algorithm you will use to insert. Your algorithm must decide which of the two heaps will $e$ be inserted into and how to maintain the size balance condition.
+
+Describe the algorithm below and the overall complexity of an insert operation. This part will not be graded.

@@ -12,12 +12,11 @@
 Data that consists of points
 $(x_0, y_0), \ldots, (x_n, y_n)$, wherein $x_0 < x_1 < \ldots < x_n $, and  $y_0 < y_1 \ldots < y_n$ as well, is given.
 
-Furthermore, it is given that $y_0 < x_0$ and $ y_n > x_n$.
+Furthermore, it is given that $y_0 < x_0$ and $y_n > x_n$.
 
-Find a "cross-over" index $i$ between $0$ and $n-1$ such that  $ y_i \leq x_i$ and $y_{i+1} > x_{i+1}$.
+Find a "cross-over" index $i$ between $0$ and $n-1$ such that $y_i \leq x_i$ and $y_{i+1} > x_{i+1}$.
 
 Note that such an index must always exist (convince yourself of this fact before we proceed).
-
 
 __Example__
 

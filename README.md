@@ -78,3 +78,39 @@ Knowing the running time of the `twoWayMerge` algorithm as mentioned above, what
 1. Call `twoWayMerge` on consecutive pairs of lists `twoWayMerge(lists[0], lists[1])`, ... , `twoWayMerge(lists[k-2], lists[k-1])` (assume k is even).
 2. Thus, we create a new list of lists of size `k/2`.
 3. Repeat steps 1, 2 until we have a single list left.
+
+## Chapter 2: Basic Data Structures and Heaps
+
+### Problem 1: Least-k Elements Data Structure
+
+We saw how min-heaps can efficiently allow us to query the least element in a heap (array). We would like to modify minheaps in this exercise to design a data structure to maintain the __least k__ elements for a  given $k \geq 1$ with $$k = 1$$ being the minheap data-structure.
+
+Our design is to hold two arrays:
+  - (a) a sorted array `A` of $k$ elements that forms our least k elements; and
+  - (b) a minheap `H` with the remaining $n-k$ elements.
+
+Our data structure will itself be a pair of arrays `(A,H)` with the following property:
+ - `H` must be a minheap
+ - `A` must be sorted of size $k$.
+ - Every element of `A` must be smaller than every element of `H`.
+
+The key operations to implement in this assignment include:
+  - insert a new element into the data-structure
+  - delete an existing element from the data-structure.
+
+### (A) Design Insertion  Algorithm
+
+Suppose we wish to insert a new element with key $j$ into this data structure. Describe the pseudocode. Your pseudocode must deal with two cases: when the inserted element $j$ would be one of the `least k` elements i.e, it belongs to the array `A`; or when the inserted element belongs to the heap `H`. How would you distinguish between the two cases?
+
+- You can assume that heap operations such as `insert(H, key)` and `delete(H, index)` are defined.
+- Assume that the heap is indexed as  `H[1]`,...,`H[n -k]` with `H[0]` being unused.
+- Assume $ n > k$, i.e, there are already more than $k$ elements in the data structure.
+
+### (B) Design Deletion Algorithm
+
+Suppose we wish to delete an index $j$ from the top-k array $A$. Design an algorithm to perform this deletion. Assume that the heap is not empty, in which case you can assume that the deletion fails.
+
+- You can assume that heap operations such as `insert(H, key)` and `delete(H, index)` are defined.
+- Assume that the heap is indexed as  `H[1]`,...,`H[n -k]` with `H[0]` being unused.
+- Assume $ n > k$, i.e, there are already more than $k$ elements in the data structure.
+

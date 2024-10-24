@@ -114,3 +114,4 @@ Suppose we wish to delete an index $j$ from the top-k array $A$. Design an algor
 - Assume that the heap is indexed as  `H[1]`,...,`H[n -k]` with `H[0]` being unused.
 - Assume $ n > k$, i.e, there are already more than $k$ elements in the data structure.
 
+### Problem 2: MaxHeap

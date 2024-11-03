@@ -52,6 +52,39 @@ def merge_sort(A:list):
     return A
 
 
+def quick_sort(A:list):
+    def qsort(low, high):
+        if low >= high: # Base condition
+            return
+        idx_pivot = low # Take A[low] as the pivot
+        location = partition(A, low, high, idx_pivot)
+            # A[location] = pivot
+            # All elements in the left sub-array A[low:(location-1)] <= pivot
+            # All elements in the right sub-array A[(location+1):high] >= pivot
+        qsort(low, location-1)
+        qsort(location+1, high)
+
+    def partition(A, low, high, idx):
+        if low == high: return
+        A[idx], A[low] = A[low], A[idx]
+        i, j = low, high+1
+        while True:
+            while True:
+                i += 1
+                if i == high: break
+                if A[low] < A[i]: break
+            while True:
+                j -=1
+                if j == low: break
+                if A[j] < A[low]: break
+            if i >= j: break
+            A[i], A[j] = A[j], A[i]
+        A[low], A[j] = A[j], A[low]
+        return j
+
+    qsort(0, len(A)-1)
+    return A
+
 if __name__ == "__main__":
     A = input("Enter an array sperating by spaces: ")
     A = [int(i) for i in A.split(" ")]
@@ -77,6 +110,14 @@ if __name__ == "__main__":
     print("=== Merge sort ===")
     t0 = time.time()
     A_sorted = merge_sort(A)
+    t1 = time.time()
+    print("Sorted array:")
+    print(A_sorted)
+    print(f"Time cost: {t1 - t0} seconds")
+
+    print("=== Quick sort ===")
+    t0 = time.time()
+    A_sorted = quick_sort(A)
     t1 = time.time()
     print("Sorted array:")
     print(A_sorted)

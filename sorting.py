@@ -8,7 +8,7 @@ def selection_sort(A:list):
         A[i], A[idx_min] = A[idx_min], A[i] # Swab
 
 
-def insetion_sort(A:list):
+def insertion_sort(A:list):
     N = len(A) # Number of elements
     for i in range(1, N): # Before iteration i, A[0:(i-1)] has been sorted.
         for j in range(i, 0, -1): # Iterate backwards from j to 0.

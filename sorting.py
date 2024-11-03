@@ -8,4 +8,10 @@ def selection_sort(A:list):
         A[i], A[idx_min] = A[idx_min], A[i] # Swab
 
 
-
+def insetion_sort(A:list):
+    N = len(A) # Number of elements
+    for i in range(1, N): # Before iteration i, A[0:(i-1)] has been sorted.
+        for j in range(i, 0, -1): # Iterate backwards from j to 0.
+            if A[j-1] <= A[j]: # If the previous element is not larger than the current element,
+                break          # meaning A[j] is loacted correctly, thus we break the nested loop.
+            A[j], A[j-1] = A[j], A[j-1] # Otherwise, swap two elements.

@@ -1,3 +1,5 @@
+import time
+
 def selection_sort(A:list):
     N = len(A)
     for i in range(N-1): # Before iteration i, A[0:(i-1)] has been sorted.
@@ -6,6 +8,7 @@ def selection_sort(A:list):
             if A[j] < A[idx_min]: # If the coming element A[j] is smaller than the current minimum element,
                 idx_min = j       # replace the index.
         A[i], A[idx_min] = A[idx_min], A[i] # Swab
+    return A
 
 
 def insertion_sort(A:list):
@@ -15,6 +18,7 @@ def insertion_sort(A:list):
             if A[j-1] <= A[j]: # If the previous element is not larger than the current element,
                 break          # meaning A[j] is loacted correctly, thus we break the nested loop.
             A[j], A[j-1] = A[j], A[j-1] # Otherwise, swap two elements.
+    return A
 
 
 def merge_sort(A:list):
@@ -45,3 +49,35 @@ def merge_sort(A:list):
                 left += 1
 
     rsort(0, len(A)-1)
+    return A
+
+
+if __name__ == "__main__":
+    A = input("Enter an array sperating by spaces: ")
+    A = [int(i) for i in A.split(" ")]
+    print(f"Inputed array (size={len(A)}):")
+    print(A)
+
+    print("=== Selection sort ===")
+    t0 = time.time()
+    A_sorted = selection_sort(A)
+    t1 = time.time()
+    print("Sorted array:")
+    print(A_sorted)
+    print(f"Time cost: {t1 - t0} seconds")
+
+    print("=== Insertion sort ===")
+    t0 = time.time()
+    A_sorted = insertion_sort(A)
+    t1 = time.time()
+    print("Sorted array:")
+    print(A_sorted)
+    print(f"Time cost: {t1 - t0} seconds")
+
+    print("=== Merge sort ===")
+    t0 = time.time()
+    A_sorted = merge_sort(A)
+    t1 = time.time()
+    print("Sorted array:")
+    print(A_sorted)
+    print(f"Time cost: {t1 - t0} seconds")

@@ -86,7 +86,7 @@ Knowing the running time of the `twoWayMerge` algorithm as mentioned above, what
 We saw how min-heaps can efficiently allow us to query the least element in a heap (array). We would like to modify minheaps in this exercise to design a data structure to maintain the __least k__ elements for a  given $k \geq 1$ with $$k = 1$$ being the minheap data-structure.
 
 Our design is to hold two arrays:
-  - (a) a sorted array `A` of $k$ elements that forms our least k elements; and
+  - (a) a sorted array `A` of $k$ elements that forms our least k elements and
   - (b) a minheap `H` with the remaining $n-k$ elements.
 
 Our data structure will itself be a pair of arrays `(A,H)` with the following property:
@@ -100,7 +100,7 @@ The key operations to implement in this assignment include:
 
 ### (A) Design Insertion  Algorithm
 
-Suppose we wish to insert a new element with key $j$ into this data structure. Describe the pseudocode. Your pseudocode must deal with two cases: when the inserted element $j$ would be one of the `least k` elements i.e, it belongs to the array `A`; or when the inserted element belongs to the heap `H`. How would you distinguish between the two cases?
+Suppose we wish to insert a new element with key $j$ into this data structure. Describe the pseudocode. Your pseudocode must deal with two cases: when the inserted element $j$ would be one of the `least k` elements i.e, it belongs to the array `A` or when the inserted element belongs to the heap `H`. How would you distinguish between the two cases?
 
 - You can assume that heap operations such as `insert(H, key)` and `delete(H, index)` are defined.
 - Assume that the heap is indexed as  `H[1]`,...,`H[n -k]` with `H[0]` being unused.
@@ -255,4 +255,258 @@ def matrix_multiplication(H, lst):
 def return_random_hash_function(m, n):
     # return a random hash function wherein each entry is chosen as 1 with probability >= 1/2 and 0 with probability < 1/2
     '''your code here'''
+```
+
+## Module 4
+
+In this assignment, we will explore countmin sketches and bloom filters. We will use two text files `great-gatsby-fitzgerald.txt` and `war-and-peace-tolstoy.txt` to load up the text of two famous novels courtesy of Project Guttenberg.
+
+We will explore two tasks:
+  - Counting the frequency of words of length 5 or more in both novels using a count-min sketch
+  - Using a bloom filter to approximately count how many words in the War and Peace novel already appears in the Great Gatsby.
+
+### Step 1:  Making a Universal Hash Family
+
+We will use a family of hash function that first starts by (a) generating a random prime number $p$ (we will use the Miller-Rabin primality test for this purpopse) (b) generating random numbers a, b between 2 and p-1.
+
+The hash function $h_{a,b,p} (n) = (an + b) \mod p$.
+
+Note that this function will be between 0 and p-1. We will need to also make sure to take the hash value modulo $m$ where $m$ is the size of the hashtable.
+
+To hash strings, we will first use python's inbuilt hash function and then use $h_{a,b,p}$ on the result.
+
+As a first step, we will generate a random prime number.
+
+#### (A) Generate Random Prime Numbers
+
+```python
+# Python3 program Miller-Rabin randomized primality test
+# Copied from geeksforgeeks: https://www.geeksforgeeks.org/primality-test-set-3-miller-rabin/
+import random
+
+# Utility function to do
+# modular exponentiation.
+# It returns (x^y) % p
+def power(x, y, p):
+
+  # Initialize result
+  res = 1
+
+  # Update x if it is more than or
+  # equal to p
+  x = x % p
+  while (y > 0):
+
+    # If y is odd, multiply
+    # x with result
+    if (y & 1):
+      res = (res * x) % p
+
+    # y must be even now
+    y = y>>1 # y = y/2
+    x = (x * x) % p
+
+  return res
+
+def miillerTest(d, n):
+  '''
+  This function is called for all k trials.
+  It returns false if n is composite and returns false if n is probably prime.
+  d is an odd number such that d*2<sup>r</sup> = n-1 for some r >= 1
+  '''
+  # Pick a random number in [2..n-2]
+  # Corner cases make sure that n > 4
+  a = 2 + random.randint(1, n - 4)
+
+  # Compute a^d % n
+  x = power(a, d, n)
+
+  if (x == 1 or x == n - 1):
+    return True
+
+  # Keep squaring x while one
+  # of the following doesn't
+  # happen
+  # (i) d does not reach n-1
+  # (ii) (x^2) % n is not 1
+  # (iii) (x^2) % n is not n-1
+  while (d != n - 1):
+    x = (x * x) % n
+    d *= 2
+
+    if (x == 1):
+      return False
+    if (x == n - 1):
+      return True
+
+  # Return composite
+  return False
+
+def isPrime( n, k):
+  '''
+  It returns false if n is composite and returns true if n is probably prime.
+  k is an input parameter that determines accuracy level.
+  Higher value of k indicates more accuracy.
+  '''
+  # Corner cases
+  if (n <= 1 or n == 4):
+    return False
+  if (n <= 3):
+    return True
+
+  # Find r such that n =
+  # 2^d * r + 1 for some r >= 1
+  d = n - 1
+  while (d % 2 == 0):
+    d //= 2
+
+  # Iterate given nber of 'k' times
+  for i in range(k):
+    if (miillerTest(d, n) == False):
+      return False
+
+  return True
+
+# Driver Code
+# Number of iterations
+k = 4
+
+print("All primes smaller than 100: ")
+for n in range(1,100):
+  if (isPrime(n, k)):
+    print(n , end=" ")
+# This code is contributed by mits (see citation above)
+```
+
+### Step 2: Universal Hash Families
+
+We provide three useful functions for you:
+
+- `get_random_hash_function`: Generate triple of numbers `(p, a, b)` at random, where p is  prime, a and b are numbers between 2 and p-1. The hash function $h_{p,a,b}(n)$ is given by $ (an + b) \mod p$.
+
+- `hashfun`: apply the random hash function on a number `num`.
+
+ - `hash_string`: apply the hash function on a string `hstr`. Note that the result is between 0 and p-1. If your hash table has size `m`, you should take a `mod m` on this result where you call `hash_string`.
+
+Please use these functions in your code below.
+
+```python
+# Get a random triple (p, a, b) where p is prime and a,b are numbers betweeen 2 and p-1
+def get_random_hash_function():
+    n = random.getrandbits(64)
+    if n < 0:
+        n = -n
+    if n % 2 == 0:
+        n = n + 1
+    while not isPrime(n, 20):
+        n = n + 1
+    a = random.randint(2, n-1)
+    b = random.randint(2, n-1)
+    return (n, a, b)
+
+# hash function fora number
+def hashfun(hfun_rep, num):
+    (p, a, b) = hfun_rep
+    return (a * num + b) % p
+
+# hash function for a string.
+def hash_string(hfun_rep, hstr):
+    n = hash(hstr)
+    return hashfun(hfun_rep, n)
+
+def get_random_hash_function():
+    n = random.getrandbits(32)
+    if n < 0:
+        n = -n
+    if n % 2 == 0:
+        n = n + 1
+    while not isPrime(n, 20):
+        n = n + 1
+    a = random.randint(2, n-1)
+    b = random.randint(2, n-1)
+    return (n, a, b)
+```
+
+### Step 3: Loading Data
+
+We are going to load two files `great-gatsby-fitzgerald.txt` and `war-and-peace-tolstoy.txt` to load up the text of two famous novels courtesy of Project Guttenberg. We will filter all wordsd of length >= 5 and also count the frequency of each word in a dictionary. This will be fast because it is going to use highly optimized hashtable (dictionaries) built into python.
+
+```python
+# Let us load the "Great Gatsby" novel and extract all words of length 5 or more
+filename = 'great-gatsby-fitzgerald.txt'
+file = open (filename,'r')
+txt = file.read()
+txt = txt.replace('\n',' ')
+words= txt.split(' ')
+longer_words_gg = list(filter(lambda s: len(s) >= 5, words))
+print(len(longer_words_gg))
+# Let us count the precise word frequencies
+word_freq_gg = {}
+for elt in longer_words_gg:
+    if elt in word_freq_gg:
+        word_freq_gg[elt] += 1
+    else:
+        word_freq_gg[elt] = 1
+print(len(word_freq_gg))
+
+# Let us load the "War and Peace" novel by Tolstoy translation and extract all words of length 5 or more
+filename = 'war-and-peace-tolstoy.txt'
+file = open (filename,'r')
+txt = file.read()
+txt = txt.replace('\n',' ')
+words= txt.split(' ')
+longer_words_wp = list(filter(lambda s: len(s) >= 5, words))
+print(len(longer_words_wp))
+word_freq_wp = {}
+for elt in longer_words_wp:
+    if elt in word_freq_wp:
+        word_freq_wp[elt] += 1
+    else:
+        word_freq_wp[elt] = 1
+print(len(word_freq_wp))
+```
+
+### Problem 1: Implement count-min sketch
+
+Implement `CountMinSketch` class below where `num_counters` is the number of counters.  You are given the constructor that already generates a random representative of a hash function family. Implement the functions:
+  - `increment`
+  - `approximateCount`.
+
+Please read the constructor carefully: it initializes the counters and generates the hash function for you.
+Also, when you call `hash_string` function defined previously, do not forget to take result modulo m.
+
+```python
+# Class for implementing a count min sketch "single bank" of counters
+class CountMinSketch:
+    # Initialize with `num_counters`
+    def __init__ (self, num_counters):
+        self.m = num_counters
+        self.hash_fun_rep = get_random_hash_function()
+        self.counters = [0]*self.m
+
+    # function: increment
+    # given a word, increment its count in the countmin sketch
+    def increment(self, word):
+        '''your code here'''
+
+    # function: approximateCount
+    # Given a word, get its approximate count
+    def approximateCount(self, word):
+        '''your code here'''
+
+# We will now implement the algorithm for a bank of k counters
+
+# Initialize k different counters
+def initialize_k_counters(k, m):
+    return [CountMinSketch(m) for i in range(k)]
+
+# Function increment_counters
+# increment each of the individual counters with the word
+def increment_counters(count_min_sketches, word):
+    '''your code here'''
+
+# Function: approximate_count
+# Get the approximate count by querying each counter bank and taking the minimum
+def approximate_count(count_min_sketches, word):
+    return min([cms.approximateCount(word) for cms in count_min_sketches])
 ```

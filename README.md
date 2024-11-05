@@ -1,6 +1,6 @@
 # Algorithms for Searching, Sorting, and Indexing
 
-## Chapter 1: Basics
+## Module 1: Basics
 
 - Basics of algorithms: correctness and running time complexity.
 - Time Complexity: O, big-Omega and big-Theta Notations.
@@ -79,7 +79,7 @@ Knowing the running time of the `twoWayMerge` algorithm as mentioned above, what
 2. Thus, we create a new list of lists of size `k/2`.
 3. Repeat steps 1, 2 until we have a single list left.
 
-## Chapter 2: Basic Data Structures and Heaps
+## Module 2: Basic Data Structures and Heaps
 
 ### Problem 1: Least-k Elements Data Structure
 
@@ -141,7 +141,7 @@ Suppose, we have the current data split between $H_{max}$ and $H_{min}$ and we w
 
 Describe the algorithm below and the overall complexity of an insert operation. This part will not be graded.
 
-## Chapter 3
+## Module 3
 
 ### Problem 1: Design a Correct Partition Algorithm
 

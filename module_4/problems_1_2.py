@@ -197,37 +197,85 @@ def increment_counters(count_min_sketches, word):
 def approximate_count(count_min_sketches, word):
     return min([cms.approximateCount(word) for cms in count_min_sketches])
 
+class BloomFilter:
+    def __init__(self, nbits, nhash):
+        self.bits = [False]*nbits # Initialize all bits to fals
+        self.m = nbits
+        self.k = nhash
+        # get k randdom hash functions
+        self.hash_fun_reps = [get_random_hash_function() for i in range(self.k)]
+
+    # Function to insert a word in a Bloom filter.
+    def insert(self, word):
+        indices = [hash_string(hash_fun_rep, word) % self.m for hash_fun_rep in self.hash_fun_reps]
+        for i in indices:
+            self.bits[i] = True
+
+    # Check if a word belongs to the Bloom Filter
+    def member(self, word):
+        indices = [hash_string(hash_fun_rep, word) % self.m for hash_fun_rep in self.hash_fun_reps]
+        for i in indices:
+            if not self.bits[i]:
+                return False
+        return True
+
 if __name__ == '__main__':
-  from matplotlib import pyplot as plt
+    from matplotlib import pyplot as plt
 
-  # Let's see how well your solution performs for the Great Gatsby words
-  cms_list = initialize_k_counters(5, 1000)
-  for word in longer_words_gg:
-      increment_counters(cms_list, word)
+    # Let's see how well your solution performs for the Great Gatsby words
+    cms_list = initialize_k_counters(5, 1000)
+    for word in longer_words_gg:
+        increment_counters(cms_list, word)
 
-  discrepencies = []
-  for word in longer_words_gg:
-      l = approximate_count(cms_list, word)
-      r = word_freq_gg[word]
-      assert ( l >= r)
-      discrepencies.append( l-r )
+    discrepencies = []
+    for word in longer_words_gg:
+        l = approximate_count(cms_list, word)
+        r = word_freq_gg[word]
+        assert ( l >= r)
+        discrepencies.append( l-r )
 
-  plt.hist(discrepencies)
+    plt.hist(discrepencies)
 
-  assert(max(discrepencies) <= 200), 'The largest discrepency must be definitely less than 200 with high probability. Please check your implementation'
-  print('Passed all tests')
+    assert(max(discrepencies) <= 200), 'The largest discrepency must be definitely less than 200 with high probability. Please check your implementation'
+    print('Passed all tests')
 
-  # Let's see how well your solution performs for the War and Peace
-  cms_list = initialize_k_counters(5, 5000)
-  for word in longer_words_wp:
-      increment_counters(cms_list, word)
+    # Let's see how well your solution performs for the War and Peace
+    cms_list = initialize_k_counters(5, 5000)
+    for word in longer_words_wp:
+        increment_counters(cms_list, word)
 
-  discrepencies = []
-  for word in longer_words_wp:
-      l = approximate_count(cms_list, word)
-      r = word_freq_wp[word]
-      assert ( l >= r)
-      discrepencies.append( l-r )
+    discrepencies = []
+    for word in longer_words_wp:
+        l = approximate_count(cms_list, word)
+        r = word_freq_wp[word]
+        assert ( l >= r)
+        discrepencies.append( l-r )
 
-  plt.hist(discrepencies)
-  print('Passed all tests')
+    plt.hist(discrepencies)
+    print('Passed all tests')
+
+    #do the exact count
+    # it is a measure of how optimized python data structures are under the hood that
+    # this operation finishes very quickly.
+    all_words_gg = set(longer_words_gg)
+    exact_common_wc = 0
+    for word in longer_words_wp:
+        if word in all_words_gg:
+            exact_common_wc = exact_common_wc + 1
+    print(f'Exact common word count = {exact_common_wc}')
+
+    # Try to use the same using a bloom filter.
+    bf = BloomFilter(100000, 5)
+    for word in longer_words_gg:
+        bf.insert(word)
+
+    for word in longer_words_gg:
+        assert (bf.member(word)), f'Word: {word} should be a member'
+
+    common_word_count = 0
+    for word in longer_words_wp:
+        if bf.member(word):
+            common_word_count= common_word_count + 1
+    print(f'Number of common words of length >= 5 equals : {common_word_count}')
+    assert ( common_word_count >= exact_common_wc)
+    print('All Tests Passed')

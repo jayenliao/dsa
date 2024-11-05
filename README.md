@@ -510,3 +510,10 @@ def increment_counters(count_min_sketches, word):
 def approximate_count(count_min_sketches, word):
     return min([cms.approximateCount(word) for cms in count_min_sketches])
 ```
+
+### Problem 2: Using a Bloom Filter to Count Common Words.
+
+In this problem, we will implement a Bloom filter to count how many elements of `longer_words_wp` (the words of length 5 or more in War and Peace) appear in the Great-Gatsby novel.  To do so, we will do the following:
+ - Instantiate a Bloom filter with number of bits `n` and number of hash functions `k`.
+ - Insert all words from great-gatsby into the filter.
+ - For each word from war and peace, check membership in the Bloom filter and count the number of yes answers.

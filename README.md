@@ -196,3 +196,63 @@ def boundedSort(a, k):
     for j in range(1, k):
         simplePartition(a, j)
 ```
+
+### Problem 3: Design a Universal Family Hash Function
+
+Suppose we are interested in hashing $n$ bit keys into $m$ bit hash values to hash into a table of size
+$2^m$. We view our key  as a bit vector of $n$ bits in binary. Eg., for $n = 4$, the key $14 = \left(\begin{array}{c} 1\\ 1\\ 1\\ 0 \end{array} \right)$.
+
+The hash family is defined by random boolean matrices $H$ with $m$ rows and $n$ columns. To compute the hash function, we perform a matrix multiplication. Eg., with $m = 3$ and $n= 4$, we can have a matrix $H$ such as
+
+$$ H = \left[ \begin{array}{cccc} 0 & 1 & 0 & 1 \\
+1 & 0 & 0 & 0 \\
+1 & 0 & 1 & 1 \\
+\end{array} \right]$$.
+
+
+The value of the hash function $H(14)$ is now obtained by multiplying
+
+$$ \left[ \begin{array}{cccc} 0 & 1 & 0 & 1 \\
+1 & 0 & 0 & 0 \\
+1 & 0 & 1 & 1 \\
+\end{array} \right] \times \left( \begin{array}{c}
+1\\
+1\\
+1\\
+0
+\end{array} \right) $$
+
+The matrix multiplication is carried out using AND for multiplication and XOR instead of addition. For the example above, we compute the value of hash function as
+
+$$\left( \begin{array}{c}
+ 0 \cdot 1 + 1 \cdot 1 + 0 \cdot 1 + 1 \cdot 0 \\
+ 1 \cdot 1 + 0 \cdot 1 + 0 \cdot 1 + 0 \cdot 0 \\
+ 1 \cdot 1 + 0 \cdot 1 + 1 \cdot 1 + 1 \cdot 0 \\
+ \end{array} \right) = \left( \begin{array}{c} 1 \\ 1 \\ 0 \end{array} \right)$$
+
+(A) For a given matrix $H$ and two  keys $x, y$ that differ only in their $i^{th}$ bits, provide a condition for
+$Hx = Hy$ holding. (**Hint** It may help to play with examples where you have two numbers $x, y$ that just differ at a particular bit position. Figure out which entries in the matrix are multiplied with these bits that differ).
+
+(B) Prove that the probability that two keys $x, y$ such that $x \not= y$ collide under the random choice of a matrix $x, y$ is at most $\frac{1}{2^m}$.
+
+```python
+from random import random
+
+def dot_product(lst_a, lst_b):
+    and_list = [elt_a * elt_b for (elt_a, elt_b) in zip(lst_a, lst_b)]
+    return 0 if sum(and_list)% 2 == 0 else 1
+
+# encode a matrix as a list of lists with each row as a list.
+# for instance, the example above is written as the matrix
+# H = [[0,1,0,1],[1,0,0,0],[1,0,1,1]]
+# encode column vectors simply as a list of elements.
+# you can use the dot_product function provided to you.
+def matrix_multiplication(H, lst):
+    '''your code here'''
+
+# Generate a random m \times n matrix
+# see the comment next to matrix_multiplication for how your matrix must be returned.
+def return_random_hash_function(m, n):
+    # return a random hash function wherein each entry is chosen as 1 with probability >= 1/2 and 0 with probability < 1/2
+    '''your code here'''
+```

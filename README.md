@@ -140,3 +140,32 @@ The data will be maintained as the union of the elements in two heaps $H_{\min}$
 Suppose, we have the current data split between $H_{max}$ and $H_{min}$ and we wish to insert an element $e$ into the data structure, describe the algorithm you will use to insert. Your algorithm must decide which of the two heaps will $e$ be inserted into and how to maintain the size balance condition.
 
 Describe the algorithm below and the overall complexity of an insert operation. This part will not be graded.
+
+## Chapter 3
+
+## Problem 1: Design a Correct Partition Algorithm
+
+You are given code below for an incorrect partition algorithm that fails to partition arrays wrongly or cause out of bounds access in arrays.  The comments include the invariants the algorithm wishes to maintain and will help you debug.
+
+Your goal is to write test cases that demonstrate that the partitioning will fail in various ways.
+
+```python
+def swap(a, i, j):
+    assert 0 <= i < len(a), f'accessing index {i} beyond end of array {len(a)}'
+    assert 0 <= j < len(a), f'accessing index {j} beyond end of array {len(a)}'
+    a[i], a[j] = a[j], a[i]
+
+def tryPartition(a):
+    # implementation of Lomuto partitioning algorithm
+    n = len(a)
+    pivot = a[n-1] # choose last element as the pivot.
+    i,j = 0,0 # initialize i and j both to be 0
+    for j in range(n-1): # j = 0 to n-2 (inclusive)
+        # Invariant: a[0] .. a[i] are <= pivot
+        #            a[i+1]...a[j-1] are > pivot
+        if a[j] <= pivot:
+            swap(a, i+1, j)
+            i = i + 1
+    swap(a, i+1, n-1) # place pivot in its correct place.
+    return i+1 # return the index where we placed the pivot
+```

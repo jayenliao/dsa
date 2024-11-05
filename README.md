@@ -143,7 +143,7 @@ Describe the algorithm below and the overall complexity of an insert operation. 
 
 ## Chapter 3
 
-## Problem 1: Design a Correct Partition Algorithm
+### Problem 1: Design a Correct Partition Algorithm
 
 You are given code below for an incorrect partition algorithm that fails to partition arrays wrongly or cause out of bounds access in arrays.  The comments include the invariants the algorithm wishes to maintain and will help you debug.
 
@@ -168,4 +168,31 @@ def tryPartition(a):
             i = i + 1
     swap(a, i+1, n-1) # place pivot in its correct place.
     return i+1 # return the index where we placed the pivot
+```
+
+### Problem 2. Rapid Sorting of Arrays with Bounded Number of Elements.
+
+Thus far, we have presented sorting algorithms that are comparison-based. Ie., they make no assumptions about the elements in the array just that we have a `<=` comparison operator. We now ask you to develop a rapid sorting algorithm for an array of size $n$ when it is given to you that all elements in the array are between $1, \ldots, k$ for a given $k$. Eg., consider an array with n = 100000 elements wherein all elements are between 1,..., k = 100.
+
+Develop a sorting algorithm using partition that runs in $\Theta(n \times k)$ time for such arrays. __Hint__ You can choose your pivots in a simple manner each time.
+
+Complete the implementation of a function `boundedSort(a, k)` by completing the `simplePatition` function. Given an array `a` and a fixed `pivot` element, it should partition the array "in-place" so that all elements `<= pivot` are on one side of the array and elements `> pivot` on the other.  You should not create a new array in your code.
+
+```python
+def swap(a, i, j):
+    assert 0 <= i < len(a), f'accessing index {i} beyond end of array {len(a)}'
+    assert 0 <= j < len(a), f'accessing index {j} beyond end of array {len(a)}'
+    a[i], a[j] = a[j], a[i]
+
+def simplePartition(a, pivot):
+    ## To do: partition the array a according to pivot.
+    # Your array must be partitioned into two regions - <= pivot followed by elements > pivot
+    ## If an element at the beginning of the array is already <= pivot in the beginning of the array, it should not
+    ## be moved by the algorithm.
+
+    '''your code here'''
+
+def boundedSort(a, k):
+    for j in range(1, k):
+        simplePartition(a, j)
 ```
